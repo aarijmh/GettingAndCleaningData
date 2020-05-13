@@ -20,7 +20,6 @@ rep_path <-  file.path(data_path,"UCI HAR Dataset")
 features_labels <- read.delim(file.path(rep_path,"features.txt"),sep = "",header=FALSE,colClasses = c("numeric","character"), col.names = c("id","name"))
 activity_labels <- read.delim(file.path(rep_path,"activity_labels.txt"),sep = "",header=FALSE,colClasses = c("numeric","character"),col.names = c("id","name"))
 
-
 #Step 2: filter only the mean and standard deviation column
 features_labels$name <- gsub("-","_",gsub("\\(\\)","",features_labels$name))
 features_selected = features_labels[grep(".*([Mm]ean|[Ss]td).*",features_labels$name),2]
@@ -63,13 +62,16 @@ names(whole_data)<-gsub("^f", "Frequency", names(whole_data))
 names(whole_data)<-gsub("tBody", "TimeBody", names(whole_data))
 names(whole_data)<-gsub("angle", "Angle", names(whole_data))
 names(whole_data)<-gsub("gravity", "Gravity", names(whole_data))
+names(whole_data) <- tolower(names(whole_data))
+
 names(whole_data)
+
 
 factored_data<- whole_data %>% 
   mutate(activity = factor(activity))%>%
   mutate(subject = factor(subject))%>%
   group_by(activity,subject)%>%
-  summarise_at(vars(TimeBodyAccelerometer_Mean_X:FrequencyBodyGyroscope_Std_Z),mean,na.rm=TRUE)
+  summarise_at(vars(timebodyaccelerometer_mean_x:frequencybodybodygyroscopejerkmagnitude_meanfreq),mean,na.rm=TRUE)
 
 write.table(factored_data, "finalOutput.txt", row.name=FALSE)
 
